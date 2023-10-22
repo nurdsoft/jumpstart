@@ -9,10 +9,17 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var (
+	VERSION   string
+	COMMIT    string
+	BUILDTIME string
+)
+
 func NewApp() *cli.App {
 	return &cli.App{
-		Name:  "jumpstart",
-		Usage: "jumpstart your project",
+		Name:    "jumpstart",
+		Usage:   "jumpstart your project",
+		Version: VERSION + "-" + COMMIT + "+" + BUILDTIME,
 		Commands: []*cli.Command{
 			{
 				Name: "template",
@@ -56,7 +63,9 @@ func NewApp() *cli.App {
 		Action: func(c *cli.Context) error {
 			tid := c.String("template")
 			if tid == "" {
-				return fmt.Errorf("-t | --template is required")
+				fmt.Printf("-t | --template is required\n\n")
+				cli.ShowAppHelp(c)
+				os.Exit(2)
 			}
 
 			dm, err := NewDerivedMetadata(c.Context, c.Args().First())
