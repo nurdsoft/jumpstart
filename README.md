@@ -4,4 +4,5 @@ Project generator for various languages and frameworks
 
 ## Opinions
 
-- Github repo push uses ssh auth
+- Github repos get configured with ssh auth for push
+- Uses Github repo naming convention for namespacing / orgs
