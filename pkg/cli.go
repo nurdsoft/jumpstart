@@ -61,6 +61,13 @@ func NewApp() *cli.App {
 			},
 		},
 		Action: func(c *cli.Context) error {
+			// Check if default template directory exists
+			_, err := os.Stat(absPath(DEFAULT_TEMPLATES_DIR))
+			if os.IsNotExist(err) {
+				fmt.Printf("Please run `jumpstart template sync` to seed templates\n\n")
+				os.Exit(2)
+			}
+
 			tid := c.String("template")
 			if tid == "" {
 				fmt.Printf("-t | --template is required\n\n")
@@ -78,7 +85,7 @@ func NewApp() *cli.App {
 			{
 				count := len(sshKeys.List())
 				if count == 0 {
-					fmt.Println("No SSH keys found, please generate one and try again!")
+					fmt.Println("No SSH keys found! Please generate one and try again!")
 					fmt.Println("See https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent for more information")
 					os.Exit(2)
 				} else if count > 1 {
