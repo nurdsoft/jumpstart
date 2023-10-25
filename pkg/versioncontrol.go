@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
@@ -41,6 +42,7 @@ func VersionControl(dir, repoName string) (*git.Repository, error) {
 		Author: &object.Signature{
 			Name:  "Jump Start",
 			Email: "jumpstart",
+			When:  time.Now(),
 		},
 	})
 	if err != nil {
