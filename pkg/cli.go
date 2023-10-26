@@ -102,8 +102,16 @@ func NewApp() *cli.App {
 				}
 			}
 			fmt.Printf("\nUsing ssh key: %s\n", sshKeys.Get())
-
-			gitSSHKeys, err := ssh.NewPublicKeysFromFile("git", sshKeys.Get(), "")
+			var passphrase string
+			ghSSHPassphrase, isGhSSHPassphrase := os.LookupEnv("GITHUB_SSH_PASSPHRASE")
+			if isGhSSHPassphrase {
+				passphrase = ghSSHPassphrase
+			} else {
+				fmt.Print("Enter ssh passphrase if you added it while ssh-key generation: ")
+				fmt.Scanln(&passphrase)
+				fmt.Print("in future you can add 'export GITHUB_SSH_PASSPHRASE=<passphrase>' to your .bashrc/.zshrc instead of re-entering here each time.\n")
+			}
+			gitSSHKeys, err := ssh.NewPublicKeysFromFile("git", sshKeys.Get(), passphrase)
 			if err != nil {
 				return err
 			}

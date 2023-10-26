@@ -20,6 +20,9 @@ func NewSSHKeys() *SSHKeys {
 	sshKeysDir := filepath.Join(homedir, ".ssh")
 	files, err := os.ReadDir(sshKeysDir)
 	if err != nil {
+		if strings.Contains(err.Error(), ".ssh: no such file or directory") {
+			return &SSHKeys{dir: "", keys: nil}
+		}
 		panic(err)
 	}
 
