@@ -9,10 +9,9 @@ import (
 	"strings"
 
 	"github.com/flosch/pongo2/v6"
-	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 )
 
-func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata, sshAuth ssh.AuthMethod) error {
+func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata) error {
 	templateCtx := map[string]interface{}{
 		// Project name
 		"name": dm.Name,
@@ -52,7 +51,7 @@ func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata, ssh
 		namespace = dm.Namespace
 	}
 
-	return SetupGithubRemote(ctx, namespace, dm.Name, repo, push, sshAuth)
+	return SetupGithubRemote(ctx, namespace, dm.Name, repo, push)
 }
 
 func GetTemplateConfiguration(ctx pongo2.Context, srcTemplateDir string) (*Configuration, error) {
