@@ -80,6 +80,15 @@ func NewApp() *cli.App {
 			}
 			logrus.Infof("derived metadata: %+v", *dm)
 
+			// Define the name of the required environment variable
+			requiredEnvVar := "GITHUB_TOKEN"
+			// Check if the required environment variable is set
+			if os.Getenv(requiredEnvVar) == "" {
+				fmt.Printf("The environment variable %s is missing or empty.\n", requiredEnvVar)
+				fmt.Printf("Please set %s and run the program again.\n", requiredEnvVar)
+				return err
+			}
+
 			return SynthesizeProject(c.Context, tid, dm)
 		},
 	}
