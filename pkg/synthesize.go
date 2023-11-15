@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/flosch/pongo2/v6"
@@ -80,8 +81,17 @@ func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Co
 	return err
 }
 
+func getTempDir(outDir string) string {
+	if runtime.GOOS != "windows" {
+		return ""
+	} else {
+		volume := filepath.VolumeName(outDir)
+		return volume
+	}
+}
+
 func SynthesizePipelineConfigurationFile(pipeline Pipeline, outDir string) (string, error) {
-	tmpfile, err := os.CreateTemp("", "Dockerfile")
+	tmpfile, err := os.CreateTemp(getTempDir(outDir), "Dockerfile")
 	if err != nil {
 		return "", err
 	}
