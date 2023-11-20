@@ -82,6 +82,7 @@ func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Co
 
 func SynthesizePipelineConfigurationFile(pipeline Pipeline, outDir string) (string, error) {
 	tmpfile, err := os.CreateTemp("", "Dockerfile")
+	defer os.Remove(tmpfile.Name())
 	if err != nil {
 		return "", err
 	}
@@ -89,13 +90,12 @@ func SynthesizePipelineConfigurationFile(pipeline Pipeline, outDir string) (stri
 	_, err = tmpfile.WriteString(pipeline.Dockerfile())
 	if err != nil {
 		tmpfile.Close()
-		os.Remove(tmpfile.Name())
 		return "", err
 	}
 	tmpfile.Close()
 
 	outFile := filepath.Join(outDir, "Dockerfile")
-	err = os.Rename(tmpfile.Name(), outFile)
+	err = copyFile(tmpfile.Name(), outFile)
 	return outFile, err
 }
 
