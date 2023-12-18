@@ -28,7 +28,7 @@ make releases/jumpstart
 ```
 
 #### 3. Set Up GitHub Personal Access Token
-Create a GitHub personal access token and set it as a variable GITHUB_TOKEN in your terminal profile.
+Create a GitHub personal access token with read/write repo access and set it as a variable GITHUB_TOKEN in your terminal profile.
 ```bash
 export GITHUB_TOKEN=<your_token>
 ```
