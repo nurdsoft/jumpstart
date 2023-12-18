@@ -1,9 +1,10 @@
 # Jumpstart
 
-Jumpstart is a versatile code template generator that allows you to kickstart your projects with ease.  Simply follow the instructions below to get started. 
-##### *It is actively under development to support different frameworks and languages, for updates please star the repository
+Jumpstart is a versatile code template generator that allows you to kickstart your projects with ease. 
+> [!IMPORTANT]
+> Jumpstart is under active development to support different frameworks and languages, for updates please star (or watch) the repository.
 
-## Development -
+## Development
 
 ### Build
 
@@ -12,7 +13,7 @@ Build for your local architecture
 ```
 make releases/jumpstart
 ```
-## Getting started -
+## Getting started
 
 #### 1. Clone the Repository
 
@@ -21,7 +22,7 @@ git clone https://github.com/nurdsoft/jumpstart
 ```
 #### 2. Build for Local Machine
 
-Navigate to the cloned repository and build the tool for your local machine using the following command:
+Navigate to the cloned repository and build the tool for your machine using the following command:
 ```bash
 make releases/jumpstart
 ```
@@ -31,12 +32,17 @@ Create a GitHub personal access token and set it as a variable GITHUB_TOKEN in y
 ```bash
 export GITHUB_TOKEN=<your_token>
 ```
-#### 4. Generate Your Project
+#### 4. List available templates
+You can list the available templates using the following command:
+```bash
+releases/jumpstart template list
+```
+#### 5. Generate Your Project
 Run the following command to generate a project:
 ```bash
 releases/jumpstart -t <template name> <project name>
 ```
-This command will create a GitHub repository with the name ```<project name>``` and the chosen template ```<template name>```. Navigate into your project directory using:
+This command will create a private GitHub repository with the name ```<project name>``` and the chosen template ```<template name>```. Navigate into your project directory using:
 ```bash
 cd <project name>
 ```
