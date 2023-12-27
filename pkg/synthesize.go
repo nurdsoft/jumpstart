@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"github.com/flosch/pongo2/v6"
 )
@@ -102,8 +101,7 @@ func SynthesizePipelineConfigurationFile(pipeline Pipeline, outDir string) (stri
 func runCommands(workdir string, commands []string) error {
 	var err error
 	for _, instr := range commands {
-		cag := strings.Split(instr, " ")
-		cmd := exec.Command(cag[0], cag[1:]...)
+		cmd := exec.Command("bash", "-c", instr)
 		cmd.Dir = workdir
 		if err = cmd.Run(); err != nil {
 			return fmt.Errorf("error running command '%s': %w", instr, err)
