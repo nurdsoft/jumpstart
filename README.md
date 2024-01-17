@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<blockquote>Jumpstart is a versatile code template generator that allows you to kickstart your projects with ease.</blockquote>
+
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nurdsoft.jumpstartbnd?label=Downloads&colorA=2D2A56&colorB=6164FA)](https://marketplace.visualstudio.com/items?itemName=nurdsoft.jumpstartbnd)
 [![rating](https://img.shields.io/visual-studio-marketplace/r/nurdsoft.jumpstartbnd?label=Ratings&colorA=2D2A56&colorB=6164FA)](https://marketplace.visualstudio.com/items?itemName=nurdsoft.jumpstartbnd)
 [![installs](https://img.shields.io/visual-studio-marketplace/i/nurdsoft.jumpstartbnd?label=Installs&colorA=2D2A56&colorB=6164FA)](https://marketplace.visualstudio.com/items?itemName=nurdsoft.jumpstartbnd)
@@ -9,7 +11,7 @@
 
 </div>
 
-Jumpstart is a versatile code template generator that allows you to kickstart your projects with ease. 
+
 > [!IMPORTANT]
 > Jumpstart is under active development to support different frameworks and languages, for updates please star (or watch) the repository.
 
