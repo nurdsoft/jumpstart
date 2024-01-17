@@ -1,11 +1,13 @@
+<div align="center">
+
 # Jumpstart
 
-<div align="center">
+<a align="center" href="https://marketplace.visualstudio.com/items?itemName=nurdsoft.jumpstartbnd"><img align="center" src="https://github.com/nurdsoft/jumpstart/assets/122530514/7b32c53f-dd45-47b1-8de4-c516830c74d6" /></a>
 
 <blockquote>Jumpstart is a versatile code template generator that allows you to kickstart your projects with ease.</blockquote>
 
 [![Downloads](https://img.shields.io/visual-studio-marketplace/d/nurdsoft.jumpstartbnd?label=Downloads&colorA=2D2A56&colorB=6164FA)](https://marketplace.visualstudio.com/items?itemName=nurdsoft.jumpstartbnd)
-[![rating](https://img.shields.io/visual-studio-marketplace/r/nurdsoft.jumpstartbnd?label=Ratings&colorA=2D2A56&colorB=6164FA)](https://marketplace.visualstudio.com/items?itemName=nurdsoft.jumpstartbnd)
+<!-- [![rating](https://img.shields.io/visual-studio-marketplace/r/nurdsoft.jumpstartbnd?label=Ratings&colorA=2D2A56&colorB=6164FA)](https://marketplace.visualstudio.com/items?itemName=nurdsoft.jumpstartbnd) -->
 [![installs](https://img.shields.io/visual-studio-marketplace/i/nurdsoft.jumpstartbnd?label=Installs&colorA=2D2A56&colorB=6164FA)](https://marketplace.visualstudio.com/items?itemName=nurdsoft.jumpstartbnd)
 
 
