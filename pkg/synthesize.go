@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/flosch/pongo2/v6"
@@ -103,6 +104,16 @@ func runCommands(workdir string, commands []string) error {
 	var err error
 	for _, instr := range commands {
 		cag := strings.Split(instr, " ")
+		if len(cag) == 1 && strings.Contains(cag[0], "/venv/bin/activate") {
+			if runtime.GOOS == "windows" {
+				cag[0] = "cmd"
+				cag = append(cag, "/C", filepath.Join(workdir, "venv", "Scripts", "activate"))
+			} else {
+				cag[0] = "/bin/bash"
+				cag = append(cag, "-c", ". "+filepath.Join(workdir, "venv", "bin", "activate"))
+			}
+			instr = strings.Join(cag, " ")
+		}
 		cmd := exec.Command(cag[0], cag[1:]...)
 		cmd.Dir = workdir
 		if err = cmd.Run(); err != nil {
