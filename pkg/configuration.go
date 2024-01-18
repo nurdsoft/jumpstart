@@ -24,10 +24,31 @@ func (pipeline *Pipeline) Dockerfile() string {
 	return setup + "\n" + build + "\n\n" + install + "\n\n" + run + "\n"
 }
 
+type Commands struct {
+	UnixLike []string `yaml:"unix"`
+	Windows  []string `yaml:"windows"`
+	All      []string
+}
+
+func (c *Commands) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	// First, try to unmarshal into the struct
+	type plain Commands
+	if err := unmarshal((*plain)(c)); err == nil {
+		return nil
+	}
+
+	// If that fails, try to unmarshal into a slice of strings
+	if err := unmarshal(&c.All); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type Configuration struct {
 	Name     string   `yaml:"name"`
 	Binary   string   `yaml:"binary"`
-	Commands []string `yaml:"commands"`
+	Commands Commands `yaml:"commands"`
 	Pipeline Pipeline `yaml:"pipeline"`
 }
 

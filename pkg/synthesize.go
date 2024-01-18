@@ -110,29 +110,57 @@ func SynthesizePipelineConfigurationFile(pipeline Pipeline, outDir string) (stri
 	return outFile, err
 }
 
-func runCommands(workdir string, commands []string) error {
+func runCommands(workdir string, commands Commands) error {
 	var err error
-	for _, instr := range commands {
-		cag := strings.Split(instr, " ")
-		// duck tape fix for venv activation
-		if len(cag) == 1 && strings.Contains(cag[0], "venv/bin/activate") {
-			if runtime.GOOS == "windows" {
-				cag[0] = "cmd"
-				cag = append(cag, "/C", filepath.Join(workdir, "venv", "Scripts", "activate.bat"))
-			} else {
-				shell := "/bin/bash"
-				if _, err := os.Stat(shell); os.IsNotExist(err) {
-					shell = "/bin/sh" // fallback to sh if bash is not available
-				}
-				cag[0] = shell
-				cag = append(cag, "-c", ". "+filepath.Join(workdir, "venv", "bin", "activate"))
-			}
-			instr = strings.Join(cag, " ")
+
+	if len(commands.Windows) > 0 {
+		err = runCommandsOnWindows(workdir, commands)
+		if err != nil {
+			return err
 		}
-		cmd := exec.Command(cag[0], cag[1:]...)
-		cmd.Dir = workdir
-		if err = cmd.Run(); err != nil {
-			return fmt.Errorf("error running command '%s': %w", instr, err)
+	}
+	if len(commands.UnixLike) > 0 {
+		err = runCommandsOnUnixLike(workdir, commands)
+		if err != nil {
+			return err
+		}
+	} else {
+		// Run all commands if no OS specific commands are specified
+		for _, instr := range commands.All {
+			cag := strings.Split(instr, " ")
+			cmd := exec.Command(cag[0], cag[1:]...)
+			cmd.Dir = workdir
+			if err = cmd.Run(); err != nil {
+				return fmt.Errorf("error running command '%s': %w", instr, err)
+			}
+		}
+	}
+	return nil
+}
+
+func runCommandsOnWindows(workdir string, commands Commands) error {
+	if runtime.GOOS == "windows" {
+		for _, instr := range commands.Windows {
+			cag := strings.Split(instr, " ")
+			cmd := exec.Command(cag[0], cag[1:]...)
+			cmd.Dir = workdir
+			if err := cmd.Run(); err != nil {
+				return fmt.Errorf("error running command '%s': %w", instr, err)
+			}
+		}
+	}
+	return nil
+}
+
+func runCommandsOnUnixLike(workdir string, commands Commands) error {
+	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
+		for _, instr := range commands.UnixLike {
+			cag := strings.Split(instr, " ")
+			cmd := exec.Command(cag[0], cag[1:]...)
+			cmd.Dir = workdir
+			if err := cmd.Run(); err != nil {
+				return fmt.Errorf("error running command '%s': %w", instr, err)
+			}
 		}
 	}
 	return nil
