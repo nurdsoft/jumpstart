@@ -63,10 +63,17 @@ func GetTemplateConfiguration(ctx pongo2.Context, srcTemplateDir string) (*Confi
 	return loadConfigBytes(b)
 }
 
-func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Configuration, outDir string) error {
+func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Configuration, outDir string) (err error) {
 	os.MkdirAll(outDir, 0755)
 
-	err := renderTemplates(ctx, filepath.Join(srcTemplateDir, TEMPLATE_DIRNAME), outDir)
+	// Remove project directory if an error occurred
+	defer func() {
+		if err != nil {
+			os.RemoveAll(outDir) // remove directory if an error occurred
+		}
+	}()
+
+	err = renderTemplates(ctx, filepath.Join(srcTemplateDir, TEMPLATE_DIRNAME), outDir)
 	if err != nil {
 		return err
 	}
@@ -77,6 +84,9 @@ func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Co
 	}
 
 	_, err = SynthesizePipelineConfigurationFile(cfg.Pipeline, outDir)
+	if err != nil {
+		return err
+	}
 
 	return err
 }
@@ -104,12 +114,17 @@ func runCommands(workdir string, commands []string) error {
 	var err error
 	for _, instr := range commands {
 		cag := strings.Split(instr, " ")
-		if len(cag) == 1 && strings.Contains(cag[0], "/venv/bin/activate") {
+		// duck tape fix for venv activation
+		if len(cag) == 1 && strings.Contains(cag[0], "venv/bin/activate") {
 			if runtime.GOOS == "windows" {
 				cag[0] = "cmd"
-				cag = append(cag, "/C", filepath.Join(workdir, "venv", "Scripts", "activate"))
+				cag = append(cag, "/C", filepath.Join(workdir, "venv", "Scripts", "activate.bat"))
 			} else {
-				cag[0] = "/bin/bash"
+				shell := "/bin/bash"
+				if _, err := os.Stat(shell); os.IsNotExist(err) {
+					shell = "/bin/sh" // fallback to sh if bash is not available
+				}
+				cag[0] = shell
 				cag = append(cag, "-c", ". "+filepath.Join(workdir, "venv", "bin", "activate"))
 			}
 			instr = strings.Join(cag, " ")
