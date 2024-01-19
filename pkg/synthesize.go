@@ -145,7 +145,7 @@ func runCommandsOnWindows(workdir string, commands Commands) error {
 			cmd := exec.Command(cag[0], cag[1:]...)
 			cmd.Dir = workdir
 			if err := cmd.Run(); err != nil {
-				return fmt.Errorf("error running command '%s': %w", command, err)
+				return fmt.Errorf("error running windows command '%s': %w", command, err)
 			}
 		}
 	}
@@ -159,7 +159,7 @@ func runCommandsOnUnixLike(workdir string, commands Commands) error {
 			cmd := exec.Command(cag[0], cag[1:]...)
 			cmd.Dir = workdir
 			if err := cmd.Run(); err != nil {
-				return fmt.Errorf("error running command '%s': %w", command, err)
+				return fmt.Errorf("error running unix command '%s': %w", command, err)
 			}
 		}
 	}
