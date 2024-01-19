@@ -10,6 +10,9 @@ import (
 
 func renderTemplates(ctx pongo2.Context, inDir, outDir string) error {
 	return filepath.WalkDir(inDir, func(path string, d fs.DirEntry, e error) error {
+		if e != nil {
+			return e
+		}
 		if d.IsDir() {
 			return nil
 		}

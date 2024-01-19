@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/flosch/pongo2/v6"
@@ -62,10 +63,17 @@ func GetTemplateConfiguration(ctx pongo2.Context, srcTemplateDir string) (*Confi
 	return loadConfigBytes(b)
 }
 
-func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Configuration, outDir string) error {
+func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Configuration, outDir string) (err error) {
 	os.MkdirAll(outDir, 0755)
 
-	err := renderTemplates(ctx, filepath.Join(srcTemplateDir, TEMPLATE_DIRNAME), outDir)
+	// Remove project directory if an error occurred
+	defer func() {
+		if err != nil {
+			os.RemoveAll(outDir) // remove directory if an error occurred
+		}
+	}()
+
+	err = renderTemplates(ctx, filepath.Join(srcTemplateDir, TEMPLATE_DIRNAME), outDir)
 	if err != nil {
 		return err
 	}
@@ -76,6 +84,9 @@ func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Co
 	}
 
 	_, err = SynthesizePipelineConfigurationFile(cfg.Pipeline, outDir)
+	if err != nil {
+		return err
+	}
 
 	return err
 }
@@ -99,14 +110,57 @@ func SynthesizePipelineConfigurationFile(pipeline Pipeline, outDir string) (stri
 	return outFile, err
 }
 
-func runCommands(workdir string, commands []string) error {
+func runCommands(workdir string, commands Commands) error {
 	var err error
-	for _, instr := range commands {
-		cag := strings.Split(instr, " ")
-		cmd := exec.Command(cag[0], cag[1:]...)
-		cmd.Dir = workdir
-		if err = cmd.Run(); err != nil {
-			return fmt.Errorf("error running command '%s': %w", instr, err)
+
+	if len(commands.Windows) > 0 {
+		err = runCommandsOnWindows(workdir, commands)
+		if err != nil {
+			return err
+		}
+	}
+	if len(commands.UnixLike) > 0 {
+		err = runCommandsOnUnixLike(workdir, commands)
+		if err != nil {
+			return err
+		}
+	} else {
+		// Run all commands if no OS specific commands are specified
+		for _, command := range commands.All {
+			cag := strings.Split(command, " ")
+			cmd := exec.Command(cag[0], cag[1:]...)
+			cmd.Dir = workdir
+			if err = cmd.Run(); err != nil {
+				return fmt.Errorf("error running command '%s': %w", command, err)
+			}
+		}
+	}
+	return nil
+}
+
+func runCommandsOnWindows(workdir string, commands Commands) error {
+	if runtime.GOOS == "windows" {
+		for _, command := range commands.Windows {
+			cag := strings.Split(command, " ")
+			cmd := exec.Command(cag[0], cag[1:]...)
+			cmd.Dir = workdir
+			if err := cmd.Run(); err != nil {
+				return fmt.Errorf("error running windows command '%s': %w", command, err)
+			}
+		}
+	}
+	return nil
+}
+
+func runCommandsOnUnixLike(workdir string, commands Commands) error {
+	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
+		for _, command := range commands.UnixLike {
+			cag := strings.Split(command, " ")
+			cmd := exec.Command(cag[0], cag[1:]...)
+			cmd.Dir = workdir
+			if err := cmd.Run(); err != nil {
+				return fmt.Errorf("error running unix command '%s': %w", command, err)
+			}
 		}
 	}
 	return nil
