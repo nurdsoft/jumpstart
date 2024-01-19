@@ -126,12 +126,12 @@ func runCommands(workdir string, commands Commands) error {
 		}
 	} else {
 		// Run all commands if no OS specific commands are specified
-		for _, instr := range commands.All {
-			cag := strings.Split(instr, " ")
+		for _, command := range commands.All {
+			cag := strings.Split(command, " ")
 			cmd := exec.Command(cag[0], cag[1:]...)
 			cmd.Dir = workdir
 			if err = cmd.Run(); err != nil {
-				return fmt.Errorf("error running command '%s': %w", instr, err)
+				return fmt.Errorf("error running command '%s': %w", command, err)
 			}
 		}
 	}
@@ -140,12 +140,12 @@ func runCommands(workdir string, commands Commands) error {
 
 func runCommandsOnWindows(workdir string, commands Commands) error {
 	if runtime.GOOS == "windows" {
-		for _, instr := range commands.Windows {
-			cag := strings.Split(instr, " ")
+		for _, command := range commands.Windows {
+			cag := strings.Split(command, " ")
 			cmd := exec.Command(cag[0], cag[1:]...)
 			cmd.Dir = workdir
 			if err := cmd.Run(); err != nil {
-				return fmt.Errorf("error running command '%s': %w", instr, err)
+				return fmt.Errorf("error running command '%s': %w", command, err)
 			}
 		}
 	}
@@ -154,12 +154,12 @@ func runCommandsOnWindows(workdir string, commands Commands) error {
 
 func runCommandsOnUnixLike(workdir string, commands Commands) error {
 	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
-		for _, instr := range commands.UnixLike {
-			cag := strings.Split(instr, " ")
+		for _, command := range commands.UnixLike {
+			cag := strings.Split(command, " ")
 			cmd := exec.Command(cag[0], cag[1:]...)
 			cmd.Dir = workdir
 			if err := cmd.Run(); err != nil {
-				return fmt.Errorf("error running command '%s': %w", instr, err)
+				return fmt.Errorf("error running command '%s': %w", command, err)
 			}
 		}
 	}
