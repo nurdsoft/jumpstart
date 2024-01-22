@@ -32,3 +32,18 @@ $(RELEASES_DIR)/$(NAME)-%: $(RELEASES_DIR)
 # .PHONY: docker
 # docker
 # 	docker build . -t $(NAME) -t $(NAME):$(VERSION)-$(COMMIT) -t $(NAME):$(VERSION)
+
+.PHONY: all
+all: win32_x64 linux_x64 darwin_x64 darwin_arm64
+
+win32_x64:
+	GOOS=windows GOARCH=386 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/win32_x64.exe ./cmd/
+
+linux_x64:
+	GOOS=linux GOARCH=amd64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/linux_x64 ./cmd/
+
+darwin_arm64:
+	GOOS=darwin GOARCH=arm64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/darwin_arm64 ./cmd/
+
+darwin_x64:
+	GOOS=darwin GOARCH=amd64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/darwin_x64 ./cmd/
