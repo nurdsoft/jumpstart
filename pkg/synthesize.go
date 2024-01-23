@@ -97,6 +97,11 @@ func SynthesizePipelineConfigurationFile(pipeline Pipeline, outDir string) (stri
 		return "", err
 	}
 
+	dockerfile := pipeline.Dockerfile()
+	if dockerfile == "" {
+		return "", nil
+	}
+
 	_, err = tmpfile.WriteString(pipeline.Dockerfile())
 	if err != nil {
 		tmpfile.Close()
