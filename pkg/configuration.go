@@ -15,6 +15,11 @@ type Pipeline struct {
 }
 
 func (pipeline *Pipeline) Dockerfile() string {
+	// return empty string if setup, build and install are empty
+	if len(pipeline.Setup) == 0 && len(pipeline.Build) == 0 && len(pipeline.Install) == 0 {
+		return ""
+	}
+
 	setup := strings.Join(pipeline.Setup, "\n")
 	build := strings.Join(pipeline.Build, "\n")
 	install := strings.Join(pipeline.Install, "\n")
