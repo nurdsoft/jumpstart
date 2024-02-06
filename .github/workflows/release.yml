@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'     
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.21.1  # Specify your Go version here
+
+    - name: Run make all
+      run: make all
+
+    - name: Create Tag
+      run: git tag ${{ github.event.inputs.version }}
+
+    - name: Push Tag
+      run: git push origin ${{ github.event.inputs.version }}
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.inputs.version }}
+        release_name: ${{ github.event.inputs.version }}
+
+    - name: Upload Release Assets
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        for file in releases/*; do
+          if [ -f "$file" ]; then
+            echo "Uploading $file"
+            curl \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: $(file -b --mime-type $file)" \
+              --data-binary @$file \
+              "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=$(basename $file)"
+          fi
+        done
