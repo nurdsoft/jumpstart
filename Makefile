@@ -34,16 +34,28 @@ $(RELEASES_DIR)/$(NAME)-%: $(RELEASES_DIR)
 # 	docker build . -t $(NAME) -t $(NAME):$(VERSION)-$(COMMIT) -t $(NAME):$(VERSION)
 
 .PHONY: all
-all: win32_x64 linux_x64 darwin_x64 darwin_arm64
+all: linux_amd64 linux_arm64 linux_arm darwin_amd64 darwin_arm64 windows_amd64 windows_arm64 windows_arm
 
-win32_x64:
-	GOOS=windows GOARCH=386 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/win32_x64.exe ./cmd/
+linux_arm64:
+	GOOS=linux GOARCH=arm64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/$(NAME)-linux-arm64 ./cmd/
 
-linux_x64:
-	GOOS=linux GOARCH=amd64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/linux_x64 ./cmd/
+linux_amd64:
+	GOOS=linux GOARCH=amd64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/$(NAME)-linux-amd64 ./cmd/
+
+linux_arm:
+	GOOS=linux GOARCH=arm go build $(BUILD_OPTS) -o $(RELEASES_DIR)/$(NAME)-linux-arm ./cmd/
 
 darwin_arm64:
-	GOOS=darwin GOARCH=arm64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/darwin_arm64 ./cmd/
+	GOOS=darwin GOARCH=arm64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/$(NAME)-darwin-arm64 ./cmd/
 
-darwin_x64:
-	GOOS=darwin GOARCH=amd64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/darwin_x64 ./cmd/
+darwin_amd64:
+	GOOS=darwin GOARCH=amd64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/$(NAME)-darwin-amd64 ./cmd/
+
+windows_amd64:
+	GOOS=windows GOARCH=amd64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/$(NAME)-windows-amd64.exe ./cmd/
+
+windows_arm64:
+	GOOS=windows GOARCH=arm64 go build $(BUILD_OPTS) -o $(RELEASES_DIR)/$(NAME)-windows-arm64.exe ./cmd/
+
+windows_arm:
+	GOOS=windows GOARCH=arm go build $(BUILD_OPTS) -o $(RELEASES_DIR)/$(NAME)-windows-arm.exe ./cmd/
