@@ -58,8 +58,15 @@ func NewApp() *cli.App {
 				Aliases: []string{"t"},
 				Usage:   "template to use",
 			},
+			&cli.BoolFlag{
+				Name:  "no-remote",
+				Usage: "do not setup remote repository",
+			},
 		},
 		Action: func(c *cli.Context) error {
+			// Define the name of the required environment variable
+			const requiredEnvVar = "GITHUB_TOKEN"
+
 			// Check if default template directory exists
 			_, err := os.Stat(absPath(DEFAULT_TEMPLATES_DIR))
 			if os.IsNotExist(err) {
@@ -74,22 +81,21 @@ func NewApp() *cli.App {
 				os.Exit(2)
 			}
 
-			dm, err := NewDerivedMetadata(c.Context, c.Args().First())
-			if err != nil {
-				return err
-			}
-			logrus.Infof("derived metadata: %+v", *dm)
-
-			// Define the name of the required environment variable
-			requiredEnvVar := "GITHUB_TOKEN"
 			// Check if the required environment variable is set
 			if os.Getenv(requiredEnvVar) == "" {
 				fmt.Printf("The environment variable %s is missing or empty.\n", requiredEnvVar)
 				fmt.Printf("Please set %s and run the program again.\n", requiredEnvVar)
 				return err
 			}
+			logrus.Info("found github token")
 
-			return SynthesizeProject(c.Context, tid, dm)
+			dm, err := NewDerivedMetadata(c.Context, c.Args().First())
+			if err != nil {
+				return err
+			}
+			logrus.Infof("derived metadata: %+v", *dm)
+
+			return SynthesizeProject(c.Context, tid, dm, c.Bool("no-remote"))
 		},
 	}
 }

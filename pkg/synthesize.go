@@ -12,7 +12,7 @@ import (
 	"github.com/flosch/pongo2/v6"
 )
 
-func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata) error {
+func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata, noRemote bool) error {
 	templateCtx := map[string]interface{}{
 		// Project name
 		"name": dm.Name,
@@ -44,7 +44,9 @@ func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata) err
 		return err
 	}
 
-	push := true
+	if noRemote {
+		return nil
+	}
 
 	// Github requires deliniation between user and org
 	var namespace string
@@ -52,6 +54,7 @@ func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata) err
 		namespace = dm.Namespace
 	}
 
+	push := true
 	return SetupGithubRemote(ctx, namespace, dm.Name, repo, push)
 }
 
@@ -91,6 +94,7 @@ func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Co
 	return err
 }
 
+// SynthesizePipelineConfigurationFile generates a Dockerfile from a pipeline configuration
 func SynthesizePipelineConfigurationFile(pipeline Pipeline, outDir string) (string, error) {
 	tmpfile, err := os.CreateTemp("", "Dockerfile")
 	defer os.Remove(tmpfile.Name())

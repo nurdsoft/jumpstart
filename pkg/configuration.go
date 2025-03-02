@@ -51,9 +51,16 @@ func (c *Commands) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 type Configuration struct {
-	Name     string   `yaml:"name"`
-	Binary   string   `yaml:"binary"`
+	// Name of the template
+	Name string `yaml:"name"`
+
+	// Language binary
+	Binary string `yaml:"binary"`
+
+	// Commands run to setup the local repository
 	Commands Commands `yaml:"commands"`
+
+	// Build pipeline
 	Pipeline Pipeline `yaml:"pipeline"`
 }
 
