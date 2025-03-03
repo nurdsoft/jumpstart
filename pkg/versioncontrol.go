@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path"
 	"time"
 
 	"github.com/go-git/go-git/v5"
@@ -50,6 +51,21 @@ func VersionControl(dir, repoName string) (*git.Repository, error) {
 	}
 
 	return repo, nil
+}
+
+func SetupGithubActions(repoRoot, imageName string) error {
+	dir := path.Join(repoRoot, GITHUB_ACTIONS_DIR)
+
+	os.MkdirAll(dir, os.ModePerm)
+
+	fh, err := os.Create(path.Join(dir, "image.yml"))
+	if err != nil {
+		return err
+	}
+	defer fh.Close()
+
+	_, err = fh.WriteString(GenerateGitHubActionsFile(imageName))
+	return err
 }
 
 // namespace should be empty if it is not an org

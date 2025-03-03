@@ -4,10 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"runtime"
-	"strings"
 
 	"github.com/flosch/pongo2/v6"
 )
@@ -39,23 +36,30 @@ func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata, noR
 		return fmt.Errorf("failed to synthesize project: %v", err)
 	}
 
+	err = SetupGithubActions(dm.OutDir, dm.Name)
+	if err != nil {
+		return err
+	}
+
+	// Setup version control.  This must be the last step in order to capture all the
+	// changes made to the project directory
 	repo, err := VersionControl(dm.OutDir, dm.Name)
 	if err != nil {
 		return err
 	}
 
+	// No remote setup requested
 	if noRemote {
 		return nil
 	}
 
-	// Github requires deliniation between user and org
+	// Determine namespace. Github requires delineation between user and org
 	var namespace string
 	if dm.IsGithubOrg() {
 		namespace = dm.Namespace
 	}
 
-	push := true
-	return SetupGithubRemote(ctx, namespace, dm.Name, repo, push)
+	return SetupGithubRemote(ctx, namespace, dm.Name, repo, true)
 }
 
 func GetTemplateConfiguration(ctx pongo2.Context, srcTemplateDir string) (*Configuration, error) {
@@ -117,60 +121,4 @@ func SynthesizePipelineConfigurationFile(pipeline Pipeline, outDir string) (stri
 	outFile := filepath.Join(outDir, "Dockerfile")
 	err = copyFile(tmpfile.Name(), outFile)
 	return outFile, err
-}
-
-func runCommands(workdir string, commands Commands) error {
-	var err error
-
-	if len(commands.Windows) > 0 {
-		err = runCommandsOnWindows(workdir, commands)
-		if err != nil {
-			return err
-		}
-	}
-	if len(commands.UnixLike) > 0 {
-		err = runCommandsOnUnixLike(workdir, commands)
-		if err != nil {
-			return err
-		}
-	} else {
-		// Run all commands if no OS specific commands are specified
-		for _, command := range commands.All {
-			cag := strings.Split(command, " ")
-			cmd := exec.Command(cag[0], cag[1:]...)
-			cmd.Dir = workdir
-			if err = cmd.Run(); err != nil {
-				return fmt.Errorf("error running command '%s': %w", command, err)
-			}
-		}
-	}
-	return nil
-}
-
-func runCommandsOnWindows(workdir string, commands Commands) error {
-	if runtime.GOOS == "windows" {
-		for _, command := range commands.Windows {
-			cag := strings.Split(command, " ")
-			cmd := exec.Command(cag[0], cag[1:]...)
-			cmd.Dir = workdir
-			if err := cmd.Run(); err != nil {
-				return fmt.Errorf("error running windows command '%s': %w", command, err)
-			}
-		}
-	}
-	return nil
-}
-
-func runCommandsOnUnixLike(workdir string, commands Commands) error {
-	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
-		for _, command := range commands.UnixLike {
-			cag := strings.Split(command, " ")
-			cmd := exec.Command(cag[0], cag[1:]...)
-			cmd.Dir = workdir
-			if err := cmd.Run(); err != nil {
-				return fmt.Errorf("error running unix command '%s': %w", command, err)
-			}
-		}
-	}
-	return nil
 }
