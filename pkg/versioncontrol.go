@@ -64,7 +64,7 @@ func SetupGithubActions(repoRoot, imageName string) error {
 	}
 	defer fh.Close()
 
-	_, err = fh.WriteString(GenerateGitHubActionsFile(imageName))
+	_, err = fh.WriteString(GenerateGitHubActionsBuildFile(imageName))
 	return err
 }
 

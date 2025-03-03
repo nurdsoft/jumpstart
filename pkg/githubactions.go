@@ -2,7 +2,7 @@ package pkg
 
 const GITHUB_ACTIONS_DIR = ".github/workflows"
 
-func GenerateGitHubActionsFile(imageName string) string {
+func GenerateGitHubActionsBuildFile(imageName string) string {
 	return `name: Build and Publish Docker Image
 
 on:
