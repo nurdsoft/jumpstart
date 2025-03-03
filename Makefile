@@ -9,7 +9,7 @@ COMMIT=$(shell git rev-parse --short HEAD)
 # VERSION is the latest tag, or branch name if no tags
 VERSION=$(if $(TAG),$(TAG),$(BRANCH))
 
-PKG_PATH = github.com/nurdsoft/$(NAME)/pkg
+PKG_PATH = github.com/nurdsoft/$(NAME)/pkg/cli
 
 RELEASES_DIR = releases
 BUILD_OPTS = -ldflags "-s -w -X $(PKG_PATH).VERSION=$(VERSION) -X $(PKG_PATH).COMMIT=$(COMMIT) -X $(PKG_PATH).BUILDTIME=$(BUILDTIME)"

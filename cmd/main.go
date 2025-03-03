@@ -4,13 +4,12 @@ import (
 	"os"
 
 	_ "github.com/joho/godotenv/autoload"
+	"github.com/nurdsoft/jumpstart/pkg/cli"
 	"github.com/sirupsen/logrus"
-
-	"github.com/nurdsoft/jumpstart/pkg"
 )
 
 func main() {
-	err := pkg.NewApp().Run(os.Args)
+	err := cli.NewApp().Run(os.Args)
 	if err != nil {
 		logrus.Fatal(err)
 	}

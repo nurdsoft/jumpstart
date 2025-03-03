@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func absPath(dest string) string {
+func AbsPath(dest string) string {
 	if dest[:2] == "~/" {
 		homedir, _ := os.UserHomeDir()
 		return homedir + dest[1:]

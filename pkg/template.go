@@ -17,7 +17,7 @@ const (
 )
 
 func SyncTemplates(dest string) error {
-	absDest := absPath(dest)
+	absDest := AbsPath(dest)
 
 	_, err := os.Stat(absDest)
 	if err == nil {
@@ -57,7 +57,7 @@ type TemplateProvider struct {
 }
 
 func NewTemplateProvider(baseDir string) (*TemplateProvider, error) {
-	absDir := absPath(baseDir)
+	absDir := AbsPath(baseDir)
 	return &TemplateProvider{baseDir: absDir}, nil
 }
 
