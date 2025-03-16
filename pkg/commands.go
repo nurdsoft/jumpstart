@@ -9,7 +9,7 @@ import (
 
 func runCommands(workdir string, commands Commands) error {
 	var err error
-
+	// TODO: Re-work this logic particularly the flow control
 	if len(commands.Windows) > 0 {
 		err = runCommandsOnWindows(workdir, commands)
 		if err != nil {

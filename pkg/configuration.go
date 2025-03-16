@@ -72,7 +72,9 @@ func loadConfigBytes(b []byte) (*Configuration, error) {
 	}
 
 	// Make sure binary is in PATH
-	_, err = exec.LookPath(cfg.Binary)
+	if cfg.Binary != "" {
+		_, err = exec.LookPath(cfg.Binary)
+	}
 
 	return &cfg, err
 }

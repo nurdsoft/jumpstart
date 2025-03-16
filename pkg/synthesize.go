@@ -82,6 +82,7 @@ func SynthesizeDeployment(deployCtx map[string]any, deployId string, outDir stri
 	if err != nil {
 		return fmt.Errorf("failed to create template provider: %v", err)
 	}
+
 	templatePath := tp.GetTemplate(deployId)
 
 	cfg, err := GetTemplateConfiguration(deployCtx, templatePath)
@@ -105,12 +106,10 @@ func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Co
 	if err != nil {
 		return err
 	}
-
 	err = runCommands(outDir, cfg.Commands)
 	if err != nil {
 		return err
 	}
-
 	_, err = SynthesizePipelineConfigurationFile(cfg.Pipeline, outDir)
 	if err != nil {
 		return err

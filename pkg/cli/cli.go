@@ -39,6 +39,11 @@ func NewApp() *cli.App {
 				Name:  "no-remote",
 				Usage: "do not setup remote repository",
 			},
+			&cli.BoolFlag{
+				Name:    "deploy",
+				Aliases: []string{"d"},
+				Usage:   "setup deployment",
+			},
 		},
 		Action: func(c *cli.Context) error {
 			// Check if default template directory exists
@@ -68,7 +73,13 @@ func NewApp() *cli.App {
 			}
 			logrus.Infof("derived metadata: %+v", *dm)
 
-			return pkg.SynthesizeProject(c.Context, tid, dm, c.Bool("no-remote"), nil)
+			var addDeploy *string
+			if c.Bool("deploy") {
+				d := "deployment"
+				addDeploy = &d
+			}
+
+			return pkg.SynthesizeProject(c.Context, tid, dm, c.Bool("no-remote"), addDeploy)
 		},
 	}
 }
