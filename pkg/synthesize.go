@@ -9,7 +9,7 @@ import (
 	"github.com/flosch/pongo2/v6"
 )
 
-func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata, noRemote bool) error {
+func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata, noRemote bool, deployId *string) error {
 	templateCtx := map[string]interface{}{
 		// Project name
 		"name": dm.Name,
@@ -34,6 +34,13 @@ func SynthesizeProject(ctx context.Context, tid string, dm *DerivedMetadata, noR
 	err = SynthesizeProjectFromDir(templateCtx, templatePath, cfg, dm.OutDir)
 	if err != nil {
 		return fmt.Errorf("failed to synthesize project: %v", err)
+	}
+
+	if deployId != nil {
+		err = SynthesizeDeployment(templateCtx, *deployId, dm.OutDir)
+		if err != nil {
+			return fmt.Errorf("failed to synthesize deployment: %v", err)
+		}
 	}
 
 	err = SetupGithubActions(dm.OutDir, dm.Name)
@@ -68,6 +75,20 @@ func GetTemplateConfiguration(ctx pongo2.Context, srcTemplateDir string) (*Confi
 		return nil, err
 	}
 	return loadConfigBytes(b)
+}
+
+func SynthesizeDeployment(deployCtx map[string]any, deployId string, outDir string) error {
+	tp, err := NewTemplateProvider(DEFAULT_TEMPLATES_DIR)
+	if err != nil {
+		return fmt.Errorf("failed to create template provider: %v", err)
+	}
+	templatePath := tp.GetTemplate(deployId)
+
+	cfg, err := GetTemplateConfiguration(deployCtx, templatePath)
+	if err != nil {
+		return fmt.Errorf("failed to get template configuration: %v", err)
+	}
+	return SynthesizeProjectFromDir(deployCtx, templatePath, cfg, outDir)
 }
 
 func SynthesizeProjectFromDir(ctx map[string]any, srcTemplateDir string, cfg *Configuration, outDir string) (err error) {

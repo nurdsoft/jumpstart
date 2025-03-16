@@ -68,7 +68,7 @@ func NewApp() *cli.App {
 			}
 			logrus.Infof("derived metadata: %+v", *dm)
 
-			return pkg.SynthesizeProject(c.Context, tid, dm, c.Bool("no-remote"))
+			return pkg.SynthesizeProject(c.Context, tid, dm, c.Bool("no-remote"), nil)
 		},
 	}
 }
